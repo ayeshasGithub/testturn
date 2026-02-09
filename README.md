@@ -64,6 +64,11 @@ irm https://astral.sh/uv/install.ps1 | iex
 ```bash
 uv --version
 ```
+### 2. Option B: Docker (optional)
+```bash
+docker build -t toxicity-transformer .
+docker run --rm -it -v "$PWD:/work" -w /work toxicity-transformer toxicity-train --help
+```
 
 ---
 
