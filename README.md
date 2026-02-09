@@ -42,7 +42,7 @@ Verify:
 uv --version
 
 
-3) Create env + install deps (uv)
+## 3) Create env + install deps (uv)
 You might use cod . to run it from vscode
 From the repo root(turnit_transformer_repo/toxicity_transformer_repo):
 
@@ -51,7 +51,7 @@ uv sync
 
 This creates a local virtual environment and installs dependencies from pyproject.toml.
 
-4) Run training (single GPU or CPU)
+## 4) Run training (single GPU or CPU)
 Option A: run the console script
 uv run toxicity-train \
   --train_csv data/train.csv \
