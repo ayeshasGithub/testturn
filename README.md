@@ -1,7 +1,3 @@
-Here’s a cleanly reformatted and corrected version of your README, keeping your content intact but fixing structure, headings, code blocks, and small clarity issues.
-
----
-
 # Toxicity Transformer (Civil Comments) — `uv` Workflow
 
 This repository trains a **small Transformer encoder implemented from scratch in PyTorch** (pre-layer norm blocks) for toxicity classification on the **Civil Comments dataset** from Kaggle (*Jigsaw Unintended Bias in Toxicity Classification*).
@@ -208,10 +204,3 @@ report.md        # short design report
     export HF_HOME=/path/to/cache
     ```
 
----
-
-If you want, I can also:
-
-* Tighten the language for a public GitHub release
-* Add a “Results / Metrics” section
-* Convert this into a Kaggle-ready README or paper-style report
