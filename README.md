@@ -1,58 +1,96 @@
-# Toxicity Transformer (Civil Comments) — uv workflow
-
-This repo trains a **small Transformer encoder implemented from scratch in PyTorch** (pre-layer norm blocks) for toxicity classification on the **Civil Comments dataset** (Kaggle: *Jigsaw Unintended Bias in Toxicity Classification*).
-
-**Label rule:** `toxic = (target >= 0.5)`.
-
-No data or trained models are included.
+Here’s a cleanly reformatted and corrected version of your README, keeping your content intact but fixing structure, headings, code blocks, and small clarity issues.
 
 ---
 
-## 1) Dataset
+# Toxicity Transformer (Civil Comments) — `uv` Workflow
 
-Download from Kaggle competition:
-- *Jigsaw Unintended Bias in Toxicity Classification* (Civil Comments)
+This repository trains a **small Transformer encoder implemented from scratch in PyTorch** (pre-layer norm blocks) for toxicity classification on the **Civil Comments dataset** from Kaggle (*Jigsaw Unintended Bias in Toxicity Classification*).
 
-Place these files locally (recommended):
+**Label rule**
 
+```text
+toxic = (target >= 0.5)
+```
+
+> ⚠️ No dataset files or trained models are included in this repository.
+
+---
+
+## 1. Dataset
+
+Download the dataset from the Kaggle competition:
+
+* **Jigsaw Unintended Bias in Toxicity Classification** (Civil Comments)
+
+Place the files locally (recommended structure):
+
+```text
 data/
-train.csv
-test.csv
-sample_submission.csv
+├── train.csv
+├── test.csv
+└── sample_submission.csv
+```
 
 The code expects:
-- `train.csv` with columns `comment_text`, `target`
-- `test.csv` with column `comment_text`
-- `sample_submission.csv` with `id` and `prediction` columns
+
+* `train.csv` with columns:
+
+  * `comment_text`
+  * `target`
+* `test.csv` with column:
+
+  * `comment_text`
+* `sample_submission.csv` with columns:
+
+  * `id`
+  * `prediction`
 
 ---
 
-## 2) Install uv
+## 2. Install `uv`
 
-Install `uv` (Astral). Any of these work:
+Install **uv** (Astral). Any of the following methods work.
 
 ### macOS / Linux
+
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-Windows (PowerShell)
+### Windows (PowerShell)
+
+```powershell
 irm https://astral.sh/uv/install.ps1 | iex
+```
 
-Verify:
+### Verify installation
+
+```bash
 uv --version
+```
 
+---
 
-## 3) Create env + install deps (uv)
-You might use cod . to run it from vscode
-From the repo root(turnit_transformer_repo/toxicity_transformer_repo):
+## 3. Create Environment & Install Dependencies
 
+From the repository root (e.g. `toxicity_transformer_repo/`):
+
+```bash
 uv venv
 uv sync
+```
 
-This creates a local virtual environment and installs dependencies from pyproject.toml.
+This creates a local virtual environment and installs dependencies from `pyproject.toml`.
 
-## 4) Run training (single GPU or CPU)
-Option A: run the console script
+> Tip: You can open the repo in VS Code using `code .`
+
+---
+
+## 4. Run Training (Single GPU or CPU)
+
+### Option A: Run the console script
+
+```bash
 uv run toxicity-train \
   --train_csv data/train.csv \
   --test_csv data/test.csv \
@@ -62,23 +100,40 @@ uv run toxicity-train \
   --batch_size 32 \
   --max_len 128 \
   --tokenizer_name distilbert-base-uncased
+```
 
-Option B: run as a module
+### Option B: Run as a Python module
+
+```bash
 uv run python -m toxicity_transformer.train \
   --train_csv data/train.csv \
   --test_csv data/test.csv \
   --sample_sub_csv data/sample_submission.csv \
   --out_dir outputs
+```
 
-Outputs:
-outputs/best.pt (best checkpoint by validation loss)
-outputs/submission.csv (Kaggle submission file)
+### Outputs
 
-5) Multi-GPU training (DDP)
-set USE_LIBUV=0
+```text
+outputs/
+├── best.pt            # Best checkpoint (by validation loss)
+└── submission.csv     # Kaggle submission file
+```
+
+---
+
+## 5. Multi-GPU Training (DDP)
+
+Disable libuv if needed:
+
+```bash
+export USE_LIBUV=0
 uv run python -c "import os; print(os.getenv('USE_LIBUV'))"
+```
 
-Example on 2 GPUs (single machine):
+### Example: 2 GPUs on a single machine
+
+```bash
 uv run torchrun --nproc_per_node=2 -m toxicity_transformer.train \
   --train_csv data/train.csv \
   --test_csv data/test.csv \
@@ -87,14 +142,26 @@ uv run torchrun --nproc_per_node=2 -m toxicity_transformer.train \
   --epochs 5 \
   --batch_size 32 \
   --use_amp
+```
 
-Notes:
-DDP uses torch.distributed and DistributedSampler.
-Only rank 0 writes checkpoints and submission artifacts.
+**Notes**
 
-6) Tokenization strategy (on-the-fly vs memmap)
-Default: on-the-fly tokenization (flexible; simplest).
-For faster multi-epoch training, use pre-tokenized memmaps:
+* Uses `torch.distributed` with `DistributedSampler`
+* Only rank 0 writes checkpoints and submission artifacts
+
+---
+
+## 6. Tokenization Strategy
+
+### Default: On-the-fly tokenization
+
+* Flexible
+* Simplest setup
+* Recommended for experimentation
+
+### Optional: Pre-tokenized memmaps (faster for multi-epoch training)
+
+```bash
 uv run toxicity-train \
   --train_csv data/train.csv \
   --test_csv data/test.csv \
@@ -102,36 +169,49 @@ uv run toxicity-train \
   --use_memmap \
   --memmap_dir tokenized_memmap \
   --out_dir outputs
+```
 
-This creates:
-tokenized_memmap/*_input_ids.memmap
-tokenized_memmap/*_attention_mask.memmap
-tokenized_memmap/*_targets.memmap (train/val only)
-tokenized_memmap/*_meta.json (shape metadata)
+This generates:
 
-7) Project layout
+```text
+tokenized_memmap/
+├── *_input_ids.memmap
+├── *_attention_mask.memmap
+├── *_targets.memmap      # train/val only
+└── *_meta.json           # shape metadata
+```
+
+---
+
+## 7. Project Layout
+
+```text
 src/toxicity_transformer/
-  data.py     # datasets + loaders + memmap option
-  model.py    # pre-LN transformer encoder
-  train.py    # training / evaluation / DDP entrypoint
-  utils.py    # seeding, DDP helpers
-report.md     # short design report
+├── data.py      # datasets, loaders, memmap support
+├── model.py     # pre-LN Transformer encoder
+├── train.py     # training, evaluation, DDP entrypoint
+├── utils.py     # seeding, DDP helpers
+report.md        # short design report
+```
 
+---
 
-Troubleshooting
-If you run on CPU, omit --use_amp.
-If transformers can’t download the tokenizer, ensure you have internet access or set/cache Hugging Face assets:
-You can set HF_HOME to a writable cache directory.
+## Troubleshooting
 
+* **CPU-only training**: omit `--use_amp`
+* **Tokenizer download issues**:
 
+  * Ensure internet access, or
+  * Set a writable Hugging Face cache directory:
 
+    ```bash
+    export HF_HOME=/path/to/cache
+    ```
 
+---
 
+If you want, I can also:
 
-
-
-
-
-
-
-
+* Tighten the language for a public GitHub release
+* Add a “Results / Metrics” section
+* Convert this into a Kaggle-ready README or paper-style report
