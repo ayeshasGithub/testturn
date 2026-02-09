@@ -1,0 +1,20 @@
+# data / artifacts
+data/
+outputs/
+tokenized_memmap/
+*.pt
+*.ckpt
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.venv/
+.env
+
+# OS
+.DS_Store
