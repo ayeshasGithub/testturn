@@ -1,4 +1,3 @@
-Here’s a rewritten README.md that uses uv for environment + installs + running (instead of venv/pip). You can paste this over your existing README.
 # Toxicity Transformer (Civil Comments) — uv workflow
 
 This repo trains a **small Transformer encoder implemented from scratch in PyTorch** (pre-layer norm blocks) for toxicity classification on the **Civil Comments dataset** (Kaggle: *Jigsaw Unintended Bias in Toxicity Classification*).
